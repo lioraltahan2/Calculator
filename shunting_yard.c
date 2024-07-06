@@ -13,7 +13,7 @@ node_t *shunting_yard(node_t *infix_expression)
     tokenStack_t *operators_stack = malloc(sizeof(tokenStack_t));
     node_t *output_head = malloc(sizeof(node_t));
     node_t *output_current = output_head;
-    while (exp_current != NULL)
+    while (exp_current != NULL && exp_current->data != NULL)
     {
         token_t *token = exp_current->data;
         if (token->num != NULL_NUM)
@@ -53,7 +53,7 @@ node_t *shunting_yard(node_t *infix_expression)
         {
             top_op = operators_stack->head->value->op;
         }
-        while (top_op != NULL_OP && top_op != '(' && (curr_op - top_op >= 0 || top_op == '/' && curr_op != '^'))
+        while (top_op != NULL_OP && top_op != '(' && (curr_op - top_op <= 0 || top_op == '/' && curr_op != '^'))
         {
             token_t *top_token = token_stack_pop(operators_stack);
             output_current->data = top_token;

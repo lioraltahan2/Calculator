@@ -43,7 +43,7 @@ bool function_checker(char **input, token_t *token)
 
 bool operator_checker(char **input, token_t *token)
 {
-    char options[7] = {'+', '-', '/', '!', '*', '(', ')'};
+    char options[7] = {'+', '-', '/', '^', '*', '(', ')'};
     for (int i = 0; i < 7; i++)
     {
         if ((*input)[0] == options[i])
