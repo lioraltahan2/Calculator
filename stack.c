@@ -45,7 +45,9 @@ int num_stack_pop(numStack_t *stack)
 {
     int val = stack->head->value;
     numStackNode_t *new_head = stack->head->next;
+    numStackNode_t *temp = stack->head;
     stack->head = new_head;
+    free(temp);
     return val;
 }
 
@@ -67,6 +69,8 @@ token_t *token_stack_pop(tokenStack_t *stack)
 {
     token_t *val = stack->head->value;
     tokenStackNode_t *new_head = stack->head->next;
+    tokenStackNode_t *temp = stack->head;
     stack->head = new_head;
+    free(temp);
     return val;
 }

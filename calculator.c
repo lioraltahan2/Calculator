@@ -107,7 +107,26 @@ int evaluate_rpn(node_t *expression)
 
 int main(int argc, char *argv[])
 {
-    node_t *head = parse_expression("(9 - 3) / (1 + 1)");
+    if (argc == 1)
+    {
+        printf("Didn't get any expression to calculate");
+        return 0;
+    }
+    node_t *head = parse_expression(argv[1]);
+    node_t *last = head;
+    while (last->next != NULL)
+    {
+        last = last->next;
+    }
+    for (int i = 2; i < argc; i++)
+    {
+        node_t *curr = parse_expression(argv[i]);
+        last->next = curr;
+        while (last->next != NULL)
+        {
+            last = last->next;
+        }
+    }
     int x = evaluate_rpn(shunting_yard(head));
     printf("%d", x);
 }
