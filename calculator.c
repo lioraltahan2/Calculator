@@ -17,6 +17,49 @@
        __typeof__ (b) _b = (b); \
      _a > _b ? _b : _a; })
 
+void support_neg_numbers(node_t *head)
+{
+    if (head->data->op == '-')
+    {
+        node_t *temp = malloc(sizeof(node_t));
+        temp->data = malloc(sizeof(token_t));
+        temp->data->num = 0;
+        temp->data->op = NULL_OP;
+        temp->next = head;
+        head = temp;
+    }
+    node_t *prev = head->next;
+    node_t *curr = prev->next;
+    while (curr != NULL)
+    {
+        if (curr->data->op != '-' || prev->data->num != NULL_NUM)
+        {
+            prev = curr;
+            curr = curr->next;
+            continue;
+        }
+        prev->next = malloc(sizeof(node_t));
+        prev->next->data = malloc(sizeof(token_t));
+        prev = prev->next;
+        prev->data->num = NULL_NUM;
+        prev->data->op = '(';
+        prev->next = malloc(sizeof(node_t));
+        prev->next->data = malloc(sizeof(token_t));
+        prev = prev->next;
+        prev->data->num = 0;
+        prev->data->op = NULL_OP;
+        prev->next = curr;
+        prev = curr->next;
+        curr = curr->next->next;
+        prev->next = malloc(sizeof(node_t));
+        prev->next->data = malloc(sizeof(token_t));
+        prev = prev->next;
+        prev->data->num = NULL_NUM;
+        prev->data->op = ')';
+        prev->next = curr;
+    }
+}
+
 node_t *parse_expression(char *input)
 {
     node_t *head = malloc(sizeof(node_t));
@@ -35,6 +78,7 @@ node_t *parse_expression(char *input)
         free(last->next);
         last->next = NULL;
     }
+    support_neg_numbers(head);
     return head;
 }
 

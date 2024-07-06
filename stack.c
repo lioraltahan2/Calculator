@@ -43,6 +43,10 @@ void num_stack_push(numStack_t *stack, int num)
 
 int num_stack_pop(numStack_t *stack)
 {
+    if (stack->head == NULL)
+    {
+        return 0;
+    }
     int val = stack->head->value;
     numStackNode_t *new_head = stack->head->next;
     numStackNode_t *temp = stack->head;
