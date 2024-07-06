@@ -6,7 +6,7 @@
 #include <ctype.h>
 
 int NULL_NUM = -1;
-char NULL_OP = 'N';
+char NULL_OP = '\0';
 
 typedef struct token_t
 {
@@ -92,32 +92,4 @@ bool parse_token(char **input, token_t *token)
         return true;
     }
     return false;
-}
-
-node_t *parse_expression(char *input)
-{
-    node_t *head = malloc(sizeof(node_t));
-    head->data = malloc(sizeof(token_t));
-    node_t *current = head;
-    while (parse_token(&input, current->data))
-    {
-        current->next = malloc(sizeof(node_t));
-        current = current->next;
-        current->data = malloc(sizeof(token_t));
-    }
-    return head;
-}
-
-int main(int argc, char *argv[])
-{
-    node_t *head = parse_expression("4 +    2 AB_S__");
-    node_t *current = head;
-    while (current != NULL)
-    {
-        printf("A token with: \n");
-        printf("op: %c", (current->data)->op);
-        printf(" func: %s", (current->data)->func);
-        printf(" num: %d \n", (current->data)->num);
-        current = current->next;
-    }
 }
