@@ -79,7 +79,7 @@ bool int_checker(char **input, token_t *token)
 
 bool parse_token(char **input, token_t *token)
 {
-    while (isspace(**input))
+    while (isspace(**input) || **input == ',')
     {
         (*input)++;
     }
