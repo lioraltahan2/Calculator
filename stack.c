@@ -4,7 +4,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "token.c"
 
 typedef struct numStackNode_t
 {
@@ -17,7 +16,18 @@ typedef struct numStack_t
     struct numStackNode_t *head;
 } numStack_t;
 
-void stack_push(numStack_t *stack, int num)
+typedef struct tokenStackNode_t
+{
+    token_t *value;
+    struct tokenStackNode_t *next;
+} tokenStackNode_t;
+
+typedef struct tokenStack_t
+{
+    struct tokenStackNode_t *head;
+} tokenStack_t;
+
+void num_stack_push(numStack_t *stack, int num)
 {
     if (stack == NULL)
     {
@@ -31,10 +41,32 @@ void stack_push(numStack_t *stack, int num)
     stack->head->next = old_head;
 }
 
-int stack_pop(numStack_t *stack)
+int num_stack_pop(numStack_t *stack)
 {
     int val = stack->head->value;
     numStackNode_t *new_head = stack->head->next;
+    stack->head = new_head;
+    return val;
+}
+
+void token_stack_push(tokenStack_t *stack, token_t *token)
+{
+    if (stack == NULL)
+    {
+        stack->head = malloc(sizeof(tokenStackNode_t));
+        stack->head->value = token;
+        return;
+    }
+    tokenStackNode_t *old_head = stack->head;
+    stack->head = malloc(sizeof(tokenStackNode_t));
+    stack->head->value = token;
+    stack->head->next = old_head;
+}
+
+token_t *token_stack_pop(tokenStack_t *stack)
+{
+    token_t *val = stack->head->value;
+    tokenStackNode_t *new_head = stack->head->next;
     stack->head = new_head;
     return val;
 }
