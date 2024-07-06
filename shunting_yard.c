@@ -48,12 +48,14 @@ node_t *shunting_yard(node_t *infix_expression)
             continue;
         }
         char curr_op = token->op;
-        char top_op = NULL_OP;
-        if (operators_stack->head != NULL)
+        if (operators_stack->head == NULL)
         {
-            top_op = operators_stack->head->value->op;
+            token_stack_push(operators_stack, token);
+            exp_current = exp_current->next;
+            continue;
         }
-        while (top_op != NULL_OP && top_op != '(' && (curr_op - top_op <= 0 || top_op == '/' && curr_op != '^'))
+        char top_op = operators_stack->head->value->op;
+        while (top_op == NULL_OP || (top_op != '(' && (curr_op - top_op <= 0 || top_op == '/' && curr_op != '^')))
         {
             token_t *top_token = token_stack_pop(operators_stack);
             output_current->data = top_token;
