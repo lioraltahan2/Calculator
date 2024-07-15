@@ -7,23 +7,13 @@
 #include <math.h>
 #include "shunting_yard.c"
 
-#define max(a, b) \
-    ({ __typeof__ (a) _a = (a); \
-       __typeof__ (b) _b = (b); \
-     _a > _b ? _a : _b; })
-
-#define min(a, b) \
-    ({ __typeof__ (a) _a = (a); \
-       __typeof__ (b) _b = (b); \
-     _a > _b ? _b : _a; })
-
 void support_neg_numbers(node_t *head)
 {
     if (head->data->op == '-')
     {
         node_t *temp = malloc(sizeof(node_t));
         temp->data = malloc(sizeof(token_t));
-        temp->data->num = 0;
+        temp->data->num = get_zero();
         temp->data->op = NULL_OP;
         temp->next = head;
         head = temp;
@@ -32,7 +22,7 @@ void support_neg_numbers(node_t *head)
     node_t *curr = prev->next;
     while (curr != NULL)
     {
-        if (curr->data->op != '-' || prev->data->num != NULL_NUM)
+        if (curr->data->op != '-' || prev->data->num != NULL)
         {
             prev = curr;
             curr = curr->next;
@@ -41,12 +31,12 @@ void support_neg_numbers(node_t *head)
         prev->next = malloc(sizeof(node_t));
         prev->next->data = malloc(sizeof(token_t));
         prev = prev->next;
-        prev->data->num = NULL_NUM;
+        prev->data->num = NULL;
         prev->data->op = '(';
         prev->next = malloc(sizeof(node_t));
         prev->next->data = malloc(sizeof(token_t));
         prev = prev->next;
-        prev->data->num = 0;
+        prev->data->num = get_zero();
         prev->data->op = NULL_OP;
         prev->next = curr;
         prev = curr->next;
@@ -54,7 +44,7 @@ void support_neg_numbers(node_t *head)
         prev->next = malloc(sizeof(node_t));
         prev->next->data = malloc(sizeof(token_t));
         prev = prev->next;
-        prev->data->num = NULL_NUM;
+        prev->data->num = NULL;
         prev->data->op = ')';
         prev->next = curr;
     }
@@ -78,30 +68,39 @@ node_t *parse_expression(char *input)
         free(last->next);
         last->next = NULL;
     }
-    support_neg_numbers(head);
     return head;
 }
 
 void operator_handler(char op, numStack_t *stack)
 {
-    int b = num_stack_pop(stack);
-    int a = num_stack_pop(stack);
+    myNum_t *b = num_stack_pop(stack);
+    myNum_t *a = num_stack_pop(stack);
     switch (op)
     {
     case '+':
-        num_stack_push(stack, a + b);
+        num_stack_push(stack, addition(a, b));
+        free(a);
+        free(b);
         return;
     case '-':
-        num_stack_push(stack, a - b);
+        num_stack_push(stack, subtraction(a, b));
+        free(a);
+        free(b);
         return;
     case '/':
-        num_stack_push(stack, a / b);
+        num_stack_push(stack, division(a, b));
+        free(a);
+        free(b);
         return;
     case '*':
-        num_stack_push(stack, a * b);
+        num_stack_push(stack, multipication(a, b));
+        free(a);
+        free(b);
         return;
     case '^':
-        num_stack_push(stack, pow(a, b));
+        num_stack_push(stack, power(a, b));
+        free(a);
+        free(b);
         return;
     }
 }
@@ -110,23 +109,23 @@ void function_handler(char *func, numStack_t *stack)
 {
     if (strcmp(func, "MAX") == 0)
     {
-        num_stack_push(stack, max(num_stack_pop(stack), num_stack_pop(stack)));
+        num_stack_push(stack, num_max(num_stack_pop(stack), num_stack_pop(stack)));
     }
     if (strcmp(func, "MIN") == 0)
     {
-        num_stack_push(stack, min(num_stack_pop(stack), num_stack_pop(stack)));
+        num_stack_push(stack, num_min(num_stack_pop(stack), num_stack_pop(stack)));
     }
     if (strcmp(func, "ABS") == 0)
     {
-        num_stack_push(stack, abs(num_stack_pop(stack)));
+        num_stack_push(stack, num_abs(num_stack_pop(stack)));
     }
     if (strcmp(func, "MOSHE") == 0)
     {
-        num_stack_push(stack, 1337);
+        num_stack_push(stack, get_moshe());
     }
 }
 
-int evaluate_rpn(node_t *expression)
+void evaluate_rpn(node_t *expression)
 {
     node_t *current = expression;
     numStack_t *stack = malloc(sizeof(numStack_t));
@@ -140,13 +139,13 @@ int evaluate_rpn(node_t *expression)
         {
             operator_handler(current->data->op, stack);
         }
-        if (current->data->num != NULL_NUM)
+        if (current->data->num != NULL)
         {
             num_stack_push(stack, current->data->num);
         }
         current = current->next;
     }
-    return num_stack_pop(stack);
+    print_num(num_stack_pop(stack));
 }
 
 int main(int argc, char *argv[])
@@ -171,6 +170,6 @@ int main(int argc, char *argv[])
             last = last->next;
         }
     }
-    int x = evaluate_rpn(shunting_yard(head));
-    printf("%d", x);
+    support_neg_numbers(head);
+    evaluate_rpn(shunting_yard(head));
 }

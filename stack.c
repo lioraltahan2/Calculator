@@ -7,7 +7,7 @@
 
 typedef struct numStackNode_t
 {
-    int value;
+    myNum_t *value;
     struct numStackNode_t *next;
 } numStackNode_t;
 
@@ -27,7 +27,7 @@ typedef struct tokenStack_t
     struct tokenStackNode_t *head;
 } tokenStack_t;
 
-void num_stack_push(numStack_t *stack, int num)
+void num_stack_push(numStack_t *stack, myNum_t *num)
 {
     if (stack == NULL)
     {
@@ -41,13 +41,13 @@ void num_stack_push(numStack_t *stack, int num)
     stack->head->next = old_head;
 }
 
-int num_stack_pop(numStack_t *stack)
+myNum_t *num_stack_pop(numStack_t *stack)
 {
     if (stack->head == NULL)
     {
         return 0;
     }
-    int val = stack->head->value;
+    myNum_t *val = stack->head->value;
     numStackNode_t *new_head = stack->head->next;
     numStackNode_t *temp = stack->head;
     stack->head = new_head;

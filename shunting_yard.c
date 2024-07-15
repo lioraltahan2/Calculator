@@ -16,7 +16,7 @@ node_t *shunting_yard(node_t *infix_expression)
     while (exp_current != NULL && exp_current->data != NULL)
     {
         token_t *token = exp_current->data;
-        if (token->num != NULL_NUM)
+        if (token->num != NULL)
         {
             output_current->data = token;
             output_current->next = malloc(sizeof(node_t));
@@ -27,6 +27,24 @@ node_t *shunting_yard(node_t *infix_expression)
         if (token->func != NULL || token->op == '(')
         {
             token_stack_push(operators_stack, token);
+            exp_current = exp_current->next;
+            continue;
+        }
+        if (token->op == ',')
+        {
+            while (1)
+            {
+                token = token_stack_pop(operators_stack);
+                if (token->op == '(')
+                {
+                    token_stack_push(operators_stack, token);
+                    break;
+                }
+                output_current->data = token;
+                output_current->next = malloc(sizeof(node_t));
+                output_current = output_current->next;
+                continue;
+            }
             exp_current = exp_current->next;
             continue;
         }
